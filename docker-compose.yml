@@ -65,3 +65,15 @@ services:
       timeout: 10s
       retries: 30
       start_period: 30m
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: infer-chat-frontend
+    restart: unless-stopped
+    depends_on:
+      - glm52-vllm
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      VLLM_PROXY_TARGET: http://glm52-vllm:8000
