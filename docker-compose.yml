@@ -52,6 +52,10 @@ services:
       - --enable-auto-tool-choice
       - --enable-chunked-prefill
       - --enable-prefix-caching
+      # RTX PRO 6000 (SM12.0) needs the SM120 sparse MLA backend; the glm52
+      # image's default backends only target Hopper/datacenter Blackwell (SM10.x).
+      - --attention-backend
+      - ${ATTENTION_BACKEND:-FLASHINFER_MLA_SPARSE_SM120}
     deploy:
       resources:
         reservations:

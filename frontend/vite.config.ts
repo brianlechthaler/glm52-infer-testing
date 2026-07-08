@@ -14,6 +14,10 @@ export default defineConfig({
       '/health': {
         target: process.env.VLLM_PROXY_TARGET ?? 'http://host.docker.internal:8000',
         changeOrigin: true,
+        // vLLM takes many minutes to load; suppress ECONNREFUSED noise in dev logs.
+        configure: (proxy) => {
+          proxy.on('error', () => {});
+        },
       },
     },
   },
