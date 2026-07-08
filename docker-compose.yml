@@ -1,6 +1,6 @@
 services:
   glm52-vllm:
-    image: ${VLLM_IMAGE:-vllm/vllm-openai:glm52}
+    image: ${VLLM_IMAGE:-voipmonitor/vllm:eldritch-enlightenment-v3f65c52-b12x80eb49b-fi5a73a36-cu132-20260703}
     container_name: glm52-vllm
     restart: unless-stopped
     ipc: host
@@ -14,13 +14,89 @@ services:
       NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
       HF_HOME: /root/.cache/huggingface
       HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
-      # Skip DeepGEMM JIT warmup for faster container start; kernels compile on first request.
+      MODEL: ${MODEL:-nvidia/GLM-5.2-NVFP4}
+      SERVED_MODEL_NAME: ${SERVED_MODEL_NAME:-glm-5.2}
+      TENSOR_PARALLEL_SIZE: ${TENSOR_PARALLEL_SIZE:-8}
+      DECODE_CONTEXT_PARALLEL_SIZE: ${DECODE_CONTEXT_PARALLEL_SIZE:-1}
+      GPU_MEMORY_UTILIZATION: ${GPU_MEMORY_UTILIZATION:-0.95}
+      KV_CACHE_DTYPE: ${KV_CACHE_DTYPE:-fp8}
+      MAX_NUM_SEQS: ${MAX_NUM_SEQS:-32}
+      MAX_NUM_BATCHED_TOKENS: ${MAX_NUM_BATCHED_TOKENS:-8192}
+      MAX_MODEL_LEN: ${MAX_MODEL_LEN:-262144}
+      MTP_SPECULATIVE_TOKENS: ${MTP_SPECULATIVE_TOKENS:-5}
+      ATTENTION_BACKEND: ${ATTENTION_BACKEND:-B12X_MLA_SPARSE}
+      INDEX_TOPK_PATTERN: ${INDEX_TOPK_PATTERN:-FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS}
+      VLLM_PORT: "8000"
+      NCCL_P2P_DISABLE: "1"
+      NCCL_IB_DISABLE: "1"
+      NCCL_P2P_LEVEL: SYS
+      CUDA_DEVICE_ORDER: PCI_BUS_ID
+      OMP_NUM_THREADS: "16"
+      CUTE_DSL_ARCH: sm_120a
+      PYTORCH_CUDA_ALLOC_CONF: expandable_segments:True
+      VLLM_WORKER_MULTIPROC_METHOD: spawn
+      VLLM_USE_B12X_SPARSE_INDEXER: "1"
+      VLLM_USE_B12X_MOE: "1"
+      VLLM_USE_V2_MODEL_RUNNER: "1"
+      VLLM_USE_FLASHINFER_SAMPLER: "1"
+      VLLM_USE_B12X_FP8_GEMM: "1"
+      USES_B12X: "True"
+      B12X_DENSE_SPLITK_TURBO: "1"
+      B12X_W4A16_TC_DECODE: "1"
+      B12X_MOE_FORCE_A16: "1"
+      XDG_CACHE_HOME: /cache/jit
+      CUDA_CACHE_PATH: /cache/jit
+      VLLM_CACHE_DIR: /cache/jit/vllm
+      TVM_FFI_CACHE_DIR: /cache/jit/tvm-ffi
+      FLASHINFER_WORKSPACE_BASE: /cache/jit/flashinfer
+      TORCH_EXTENSIONS_DIR: /cache/jit/torch_extensions
+    volumes:
+      - ${HF_HOME:-~/.cache/huggingface}:/root/.cache/huggingface
+      - ./backend/serve-b12x.sh:/opt/infer/serve-b12x.sh:ro
+      - jit-glm52:/cache/jit
+    command: ["/bin/bash", "/opt/infer/serve-b12x.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 60
+      start_period: 45m
+
+  glm52-vllm-stock:
+    profiles: ["stock-patches"]
+    build:
+      context: ./backend
+      args:
+        VLLM_BASE_IMAGE: ${VLLM_STOCK_IMAGE:-vllm/vllm-openai:latest}
+    image: infer-glm52-vllm:local
+    container_name: glm52-vllm
+    restart: unless-stopped
+    ipc: host
+    shm_size: "32gb"
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    ports:
+      - "${VLLM_PORT:-8000}:8000"
+    environment:
+      NVIDIA_VISIBLE_DEVICES: ${NVIDIA_VISIBLE_DEVICES:-all}
+      HF_HOME: /root/.cache/huggingface
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN:-}
       VLLM_DEEP_GEMM_WARMUP: skip
-      # NCCL tuning for multi-GPU on PCIe (no NVLink on this node class)
+      VLLM_USE_DEEP_GEMM: "0"
+      VLLM_MOE_USE_DEEP_GEMM: "0"
       NCCL_P2P_DISABLE: "0"
       NCCL_IB_DISABLE: "1"
     volumes:
       - ${HF_HOME:-~/.cache/huggingface}:/root/.cache/huggingface
+    entrypoint: ["/opt/infer/entrypoint.sh"]
     command:
       - ${MODEL:-nvidia/GLM-5.2-NVFP4}
       - --host
@@ -34,11 +110,13 @@ services:
       - "${TENSOR_PARALLEL_SIZE:-8}"
       - --enable-expert-parallel
       - --kv-cache-dtype
-      - ${KV_CACHE_DTYPE:-fp8_e4m3}
+      - fp8_e4m3
       - --gpu-memory-utilization
       - "${GPU_MEMORY_UTILIZATION:-0.95}"
       - --max-num-seqs
       - "${MAX_NUM_SEQS:-32}"
+      - --max-num-batched-tokens
+      - "${MAX_NUM_BATCHED_TOKENS:-8192}"
       - --max-model-len
       - "${MAX_MODEL_LEN:-262144}"
       - --speculative-config.method
@@ -52,10 +130,10 @@ services:
       - --enable-auto-tool-choice
       - --enable-chunked-prefill
       - --enable-prefix-caching
-      # RTX PRO 6000 (SM12.0) needs the SM120 sparse MLA backend; the glm52
-      # image's default backends only target Hopper/datacenter Blackwell (SM10.x).
       - --attention-backend
-      - ${ATTENTION_BACKEND:-FLASHINFER_MLA_SPARSE_SM120}
+      - FLASHINFER_MLA_SPARSE_SM120
+      - --enforce-eager
+      - --disable-custom-all-reduce
     deploy:
       resources:
         reservations:
@@ -81,3 +159,6 @@ services:
       - "${FRONTEND_PORT:-5173}:5173"
     environment:
       VLLM_PROXY_TARGET: http://glm52-vllm:8000
+
+volumes:
+  jit-glm52:
