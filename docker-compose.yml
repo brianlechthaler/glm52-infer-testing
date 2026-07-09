@@ -52,9 +52,9 @@ services:
       TORCH_EXTENSIONS_DIR: /cache/jit/torch_extensions
     volumes:
       - ${HF_HOME:-~/.cache/huggingface}:/root/.cache/huggingface
-      - ./backend/serve-b12x.sh:/opt/infer/serve-b12x.sh:ro
+      - ./backend/serve-b12x.sh:/opt/glm52-infer-testing/serve-b12x.sh:ro
       - jit-glm52:/cache/jit
-    command: ["/bin/bash", "/opt/infer/serve-b12x.sh"]
+    command: ["/bin/bash", "/opt/glm52-infer-testing/serve-b12x.sh"]
     deploy:
       resources:
         reservations:
@@ -75,7 +75,7 @@ services:
       context: ./backend
       args:
         VLLM_BASE_IMAGE: ${VLLM_STOCK_IMAGE:-vllm/vllm-openai:latest}
-    image: infer-glm52-vllm:local
+    image: glm52-infer-testing-vllm:local
     container_name: glm52-vllm
     restart: unless-stopped
     ipc: host
@@ -96,7 +96,7 @@ services:
       NCCL_IB_DISABLE: "1"
     volumes:
       - ${HF_HOME:-~/.cache/huggingface}:/root/.cache/huggingface
-    entrypoint: ["/opt/infer/entrypoint.sh"]
+    entrypoint: ["/opt/glm52-infer-testing/entrypoint.sh"]
     command:
       - ${MODEL:-nvidia/GLM-5.2-NVFP4}
       - --host
@@ -151,7 +151,7 @@ services:
   frontend:
     build:
       context: ./frontend
-    container_name: infer-chat-frontend
+    container_name: glm52-infer-testing-frontend
     restart: unless-stopped
     depends_on:
       - glm52-vllm

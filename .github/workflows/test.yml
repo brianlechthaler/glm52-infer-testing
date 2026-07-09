@@ -29,9 +29,9 @@ jobs:
         with:
           context: frontend
           load: true
-          tags: infer-chat:test
+          tags: glm52-infer-testing:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Run unit tests
-        run: docker run --rm infer-chat:test npm test
+        run: docker run --rm glm52-infer-testing:test npm test
