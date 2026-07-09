@@ -25,6 +25,7 @@ First boot takes 30-45 minutes (JIT compile + model load). See [Getting started]
   - [vLLM deployment](docs/features/vllm-deployment.md) - B12X serving, SM120 patches, stock alternative
   - [Chat frontend](docs/features/chat-frontend.md) - React UI, settings, streaming
   - [Configuration](docs/features/configuration.md) - environment variables
+  - [opencode](docs/features/opencode.md) - use this deployment as the opencode model backend
   - [CI](docs/features/ci.md) - test, lint, and container workflows
 
 ## Requirements

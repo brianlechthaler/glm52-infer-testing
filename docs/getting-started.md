@@ -109,3 +109,7 @@ docker compose --profile stock-patches up -d glm52-vllm-stock frontend
 ```
 
 Sparse MLA support is incomplete in this profile; prefer the default B12X image. See [vLLM deployment](features/vllm-deployment.md).
+
+## Use with opencode
+
+The vLLM API is OpenAI-compatible with GLM tool-call and reasoning parsers enabled, so it works as the model backend for [opencode](https://opencode.ai). Configure a custom `@ai-sdk/openai-compatible` provider pointing at `http://localhost:8000/v1` and set `model` to `vllm-local/glm-5.2`. See [opencode](features/opencode.md) for the full config and code samples.
