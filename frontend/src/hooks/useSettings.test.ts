@@ -15,7 +15,9 @@ describe('useSettings', () => {
     });
 
     expect(result.current.settings.temperature).toBe(0.1);
-    expect(JSON.parse(localStorage.getItem('glm52-infer-testing-settings') ?? '{}').temperature).toBe(0.1);
+    expect(
+      JSON.parse(localStorage.getItem('glm52-infer-testing-settings') ?? '{}').temperature,
+    ).toBe(0.1);
   });
 
   it('resets settings to defaults', () => {
