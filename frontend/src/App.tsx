@@ -11,7 +11,7 @@ export function App() {
   return (
     <div className="app-shell">
       <nav className="app-nav" aria-label="Main navigation">
-        <span className="app-nav__brand">Infer</span>
+        <span className="app-nav__brand">GLM52 Infer Testing</span>
         <Link to="/" aria-current={location.pathname === '/' ? 'page' : undefined}>
           Chat
         </Link>

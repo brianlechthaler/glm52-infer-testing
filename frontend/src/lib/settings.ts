@@ -1,6 +1,6 @@
 import type { AppSettings, ChatCompletionRequest, MessageRole } from '../types';
 
-export const STORAGE_KEY = 'infer-chat-settings';
+export const STORAGE_KEY = 'glm52-infer-testing-settings';
 
 export const DEFAULT_SETTINGS: AppSettings = {
   apiBaseUrl: '',
