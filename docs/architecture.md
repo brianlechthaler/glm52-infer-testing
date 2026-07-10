@@ -10,7 +10,7 @@ The stack runs vLLM as an OpenAI-compatible API and a React frontend that proxie
 | `glm52-vllm-stock` | Optional backend (profile `stock-patches`). Stock vLLM with runtime SM120 patches. |
 | `frontend` | React/Vite chat UI. Proxies `/v1` and `/health` to the active backend. |
 
-Only one backend runs at a time. `glm52-vllm` and `glm52-vllm-stock` both bind host port `8000` and use the same container name (`glm52-vllm`), so start them with the profile selector, not together.
+Only one backend runs at a time. `glm52-vllm` (profile `b12x`) and `glm52-vllm-stock` (profile `stock-patches`) both bind host port `8000` and use the same container name (`glm52-vllm`), so start them with the profile selector (`--profile b12x` or `--profile stock-patches`), not together.
 
 ## Request flow
 
