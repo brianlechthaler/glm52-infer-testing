@@ -13,6 +13,8 @@ describe('settings', () => {
     expect(DEFAULT_SETTINGS.model).toBe('glm-5.2');
     expect(DEFAULT_SETTINGS.stream).toBe(true);
     expect(DEFAULT_SETTINGS.chatTemplateKwargs.enable_thinking).toBe(true);
+    expect(DEFAULT_SETTINGS.serverDeployment.maxModelLen).toBe(655360);
+    expect(DEFAULT_SETTINGS.serverDeployment.mtpSpeculativeTokens).toBe(0);
   });
 
   it('persists settings to localStorage', () => {

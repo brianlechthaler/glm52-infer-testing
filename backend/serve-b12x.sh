@@ -8,7 +8,8 @@ MAX_CUDAGRAPH_CAPTURE_SIZE="${MAX_CUDAGRAPH_CAPTURE_SIZE:-$(( ${MAX_NUM_SEQS:-32
 
 SPEC_ARGS=()
 if [[ "${MTP_SPECULATIVE_TOKENS:-0}" != "0" ]]; then
-  SPEC_JSON=$(printf '{"method":"mtp","num_speculative_tokens":%s,"moe_backend":"b12x","draft_sample_method":"probabilistic"}' "${MTP_SPECULATIVE_TOKENS}")
+  # Draft MTP MoE is unquantized; b12x only applies to the NVFP4 target model.
+  SPEC_JSON=$(printf '{"method":"mtp","num_speculative_tokens":%s,"draft_sample_method":"probabilistic"}' "${MTP_SPECULATIVE_TOKENS}")
   SPEC_ARGS=(--speculative-config "${SPEC_JSON}")
 fi
 
@@ -33,7 +34,7 @@ exec "${VLLM_BIN}" serve "${MODEL}" \
   --max-num-batched-tokens "${MAX_NUM_BATCHED_TOKENS:-8192}" \
   --max-num-seqs "${MAX_NUM_SEQS:-32}" \
   --max-cudagraph-capture-size "${MAX_CUDAGRAPH_CAPTURE_SIZE}" \
-  --max-model-len "${MAX_MODEL_LEN:-1048576}" \
+  --max-model-len "${MAX_MODEL_LEN:-655360}" \
   --quantization modelopt_fp4 \
   --attention-backend "${ATTENTION_BACKEND:-B12X_MLA_SPARSE}" \
   --moe-backend b12x \

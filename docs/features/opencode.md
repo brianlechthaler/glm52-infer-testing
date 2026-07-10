@@ -9,7 +9,7 @@ opencode talks to any OpenAI-compatible endpoint via the [`@ai-sdk/openai-compat
 - OpenAI-compatible API at `http://localhost:8000/v1` (see `docker-compose.yml`, `VLLM_PORT`)
 - Tool calling via `--tool-call-parser glm47 --enable-auto-tool-choice` (set in `backend/serve-b12x.sh`) — opencode relies on tool calls to act
 - Reasoning via `--reasoning-parser glm45` — opencode renders thinking blocks separately
-- 1M context (`MAX_MODEL_LEN`) and a configurable output cap
+- 640K context (`MAX_MODEL_LEN`) and a configurable output cap
 
 No cloud provider or API key is required; the model runs on your GPUs.
 
@@ -39,7 +39,7 @@ opencode reads config (JSON or JSONC) from `~/.config/opencode/opencode.jsonc` (
         "glm-5.2": {
           "name": "GLM-5.2",
           "limit": {
-            "context": 1048576,
+            "context": 655360,
             "output": 16384
           }
         }
@@ -62,7 +62,7 @@ Field reference:
 | `options.apiKey` | vLLM ignores this locally; any non-empty string satisfies the SDK |
 | `models.<id>` | Model entry. The `<id>` **must match `SERVED_MODEL_NAME`** (default `glm-5.2`), which is the `id` returned by `GET /v1/models` |
 | `models.<id>.name` | Human-readable name in the picker |
-| `limit.context` | Max context tokens; keep `<=` `MAX_MODEL_LEN` (default 1048576) |
+| `limit.context` | Max context tokens; keep `<=` `MAX_MODEL_LEN` (default 655360) |
 | `limit.output` | Cap on generated tokens per response; keep `<=` your desired max |
 | `model` | Default model in `provider/model` form, e.g. `vllm-local/glm-5.2` |
 
@@ -233,7 +233,7 @@ for chunk in stream:
 | Output length | opencode edits can be long. Set `limit.output` to bound latency; the server has no separate output cap, so this is the practical limit. |
 | Tool calling | Requires `--tool-call-parser glm47 --enable-auto-tool-choice`, set in both backends (see `backend/serve-b12x.sh` and the stock `command` in `docker-compose.yml`). If tools aren't being called, confirm you're on a backend with these flags. |
 | Reasoning | GLM-5.2 emits reasoning tokens parsed by `glm45`; opencode shows them as thinking blocks. Lower `reasoning_effort` or pass `chat_template_kwargs.enable_thinking=false` to reduce latency. |
-| Context | `MAX_MODEL_LEN` (default 1048576) bounds total context. opencode sends full session history, so long sessions approach this; raise `MAX_MODEL_LEN` with VRAM headroom, or start new sessions. |
+| Context | `MAX_MODEL_LEN` (default 655360) bounds total context. opencode sends full session history, so long sessions approach this; raise `MAX_MODEL_LEN` only with enough KV-cache headroom, or start new sessions. |
 | Concurrency | opencode is single-session; `MAX_NUM_SEQS=32` is ample. Lower it to reclaim VRAM for other workloads. |
 | First-boot latency | JIT compile + model load takes 30-45 min on first start. opencode can't connect until `/health` returns 200. |
 
