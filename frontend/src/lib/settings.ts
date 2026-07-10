@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
     gpuMemoryUtilization: 0.95,
     kvCacheDtype: 'fp8_e4m3',
     maxNumSeqs: 32,
-    maxModelLen: 262144,
+    maxModelLen: 1048576,
     mtpSpeculativeTokens: 5,
   },
 };
