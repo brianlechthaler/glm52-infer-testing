@@ -33,7 +33,7 @@ exec "${VLLM_BIN}" serve "${MODEL}" \
   --max-num-batched-tokens "${MAX_NUM_BATCHED_TOKENS:-8192}" \
   --max-num-seqs "${MAX_NUM_SEQS:-32}" \
   --max-cudagraph-capture-size "${MAX_CUDAGRAPH_CAPTURE_SIZE}" \
-  --max-model-len "${MAX_MODEL_LEN:-262144}" \
+  --max-model-len "${MAX_MODEL_LEN:-1048576}" \
   --quantization modelopt_fp4 \
   --attention-backend "${ATTENTION_BACKEND:-B12X_MLA_SPARSE}" \
   --moe-backend b12x \

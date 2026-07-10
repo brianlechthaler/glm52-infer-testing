@@ -15,7 +15,7 @@ All runtime tuning is done through `.env` (copy from `.env.example`). The Compos
 | `KV_CACHE_DTYPE` | `fp8` | KV cache dtype. `fp8` (fp8_ds_mla packed layout) is required on SM120 |
 | `MAX_NUM_SEQS` | `32` | Max concurrent sequences |
 | `MAX_NUM_BATCHED_TOKENS` | `8192` | Max tokens per batch |
-| `MAX_MODEL_LEN` | `262144` | Context length |
+| `MAX_MODEL_LEN` | `1048576` | Context length |
 | `MTP_SPECULATIVE_TOKENS` | `0` | MTP speculative decoding tokens. 0 because B12X lacks unquantized MTP draft MoE support |
 | `INDEX_TOPK_PATTERN` | 78-char F/S string | GLM 5.2 DSA indexer layer pattern, injected via `--hf-overrides` |
 | `HF_HOME` | `~/.cache/huggingface` | Host Hugging Face cache (mounted into the container) |
