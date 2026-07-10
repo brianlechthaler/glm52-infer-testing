@@ -1,5 +1,6 @@
 services:
   glm52-vllm:
+    profiles: ["b12x"]
     image: ${VLLM_IMAGE:-voipmonitor/vllm:eldritch-enlightenment-v3f65c52-b12x80eb49b-fi5a73a36-cu132-20260703}
     container_name: glm52-vllm
     restart: unless-stopped
@@ -23,7 +24,7 @@ services:
       MAX_NUM_SEQS: ${MAX_NUM_SEQS:-32}
       MAX_NUM_BATCHED_TOKENS: ${MAX_NUM_BATCHED_TOKENS:-8192}
       MAX_MODEL_LEN: ${MAX_MODEL_LEN:-262144}
-      MTP_SPECULATIVE_TOKENS: ${MTP_SPECULATIVE_TOKENS:-5}
+      MTP_SPECULATIVE_TOKENS: ${MTP_SPECULATIVE_TOKENS:-0}
       ATTENTION_BACKEND: ${ATTENTION_BACKEND:-B12X_MLA_SPARSE}
       INDEX_TOPK_PATTERN: ${INDEX_TOPK_PATTERN:-FFFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSSFSSS}
       VLLM_PORT: "8000"
@@ -122,7 +123,7 @@ services:
       - --speculative-config.method
       - mtp
       - --speculative-config.num_speculative_tokens
-      - "${MTP_SPECULATIVE_TOKENS:-5}"
+      - "${MTP_SPECULATIVE_TOKENS:-0}"
       - --tool-call-parser
       - glm47
       - --reasoning-parser
@@ -154,7 +155,9 @@ services:
     container_name: glm52-infer-testing-frontend
     restart: unless-stopped
     depends_on:
-      - glm52-vllm
+      glm52-vllm:
+        condition: service_started
+        required: false
     ports:
       - "${FRONTEND_PORT:-5173}:5173"
     environment:

@@ -5,7 +5,7 @@ React chat UI for the local vLLM OpenAI-compatible API.
 ## Run with Docker
 
 ```bash
-docker compose up -d frontend
+docker compose --profile b12x up -d
 ```
 
 Open http://localhost:5173

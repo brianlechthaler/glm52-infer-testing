@@ -29,7 +29,7 @@ All runtime tuning is done through `.env` (copy from `.env.example`). The Compos
 ## Applying changes
 
 1. Edit `.env`.
-2. Restart the backend: `docker compose up -d glm52-vllm` (or `glm52-vllm-stock` for the stock profile).
+2. Restart the backend: `docker compose --profile b12x up -d glm52-vllm` (or `--profile stock-patches up -d glm52-vllm-stock` for the stock profile).
 3. First boot after a config change re-runs JIT compilation, so expect another long warm-up.
 
 The frontend's Server deployment settings group mirrors these values for reference but does not reconfigure the server.

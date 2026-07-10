@@ -48,9 +48,9 @@ The image tag is set by `VLLM_IMAGE` in `.env`.
 Use the helper script (checks GPU passthrough and GPU count, then starts the stack) or Compose directly:
 
 ```bash
-./scripts/up.sh            # validates GPUs, then docker compose up -d, then tails logs
+./scripts/up.sh            # validates GPUs, then docker compose --profile b12x up -d, then tails logs
 # or
-docker compose up -d
+docker compose --profile b12x up -d
 ```
 
 Started services:

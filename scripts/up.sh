@@ -27,8 +27,8 @@ if [[ "$GPU_COUNT" -lt "$TP" ]]; then
 fi
 
 echo "Pulling vLLM image and starting GLM 5.2 on ${GPU_COUNT} GPU(s)..."
-docker compose pull
-docker compose up -d
+docker compose --profile b12x pull
+docker compose --profile b12x up -d
 
 echo
 echo "Following logs (Ctrl+C detaches; container keeps running)..."

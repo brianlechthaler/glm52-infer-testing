@@ -9,7 +9,7 @@ git clone https://github.com/brianlechthaler/glm52-infer-testing.git
 cd glm52-infer-testing
 cp .env.example .env      # set HF_TOKEN if the model needs auth
 docker pull voipmonitor/vllm:eldritch-enlightenment-v3f65c52-b12x80eb49b-fi5a73a36-cu132-20260703
-docker compose up -d
+docker compose --profile b12x up -d
 ```
 
 - Chat UI: http://localhost:5173
