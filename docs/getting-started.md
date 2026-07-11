@@ -112,4 +112,4 @@ Sparse MLA support is incomplete in this profile; prefer the default B12X image.
 
 ## Use with opencode
 
-The vLLM API is OpenAI-compatible with GLM tool-call and reasoning parsers enabled, so it works as the model backend for [opencode](https://opencode.ai). Configure a custom `@ai-sdk/openai-compatible` provider pointing at `http://localhost:8000/v1` and set `model` to `vllm-local/glm-5.2`. See [opencode](features/opencode.md) for the full config and code samples.
+The vLLM API is OpenAI-compatible with GLM tool-call and reasoning parsers enabled, so it works as the model backend for [opencode](https://opencode.ai). Run `./scripts/install-opencode.sh` to install opencode and write a global config that uses the full `MAX_MODEL_LEN` context window, or configure a custom `@ai-sdk/openai-compatible` provider manually pointing at `http://localhost:8000/v1` with `model` set to `vllm-local/glm-5.2`. See [opencode](features/opencode.md) for the full config and code samples.

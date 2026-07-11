@@ -21,6 +21,24 @@ No cloud provider or API key is required; the model runs on your GPUs.
 
 ## Configure opencode
 
+### Quick setup (installer script)
+
+`scripts/install-opencode.sh` installs opencode (if missing) and writes a global config pointing at this deployment, using the **full context window** served by vLLM. It reads `MAX_MODEL_LEN` and `SERVED_MODEL_NAME` from `.env` (falling back to `.env.example`), so the opencode `limit.context` always matches the backend:
+
+```bash
+./scripts/install-opencode.sh
+```
+
+An existing `~/.config/opencode/opencode.jsonc` is backed up to `opencode.jsonc.bak` before it is overwritten. Override any value via environment variables, e.g. `VLLM_BASE_URL`, `MAX_MODEL_LEN`, `SERVED_MODEL_NAME`, or `OPENCODE_OUTPUT_LIMIT`.
+
+Verify the resolved config:
+
+```bash
+opencode debug config
+```
+
+### Manual setup
+
 opencode reads config (JSON or JSONC) from `~/.config/opencode/opencode.jsonc` (global) or `opencode.json`/`opencode.jsonc` in a project root. Project config overrides global. Add a custom provider pointing at the local vLLM server:
 
 ```jsonc
